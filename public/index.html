@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Дала Гид</title>
+<meta name="description" content="Қазақстандағы көрікті жерлер туралы гид-чат: суретті жүктесеңіз, жерді танып, тарихы мен жолы туралы айтады.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@600;800&family=Noto+Sans:wght@400;500;600&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: слева заголовок, кнопка загрузки фото и панорама Тянь-Шаня; справа чат-гид, который узнаёт места по снимкам. Ниже карточки направлений с высотами и сезоны. */
+:root {
+  --bg: #F2F5F6;
+  --surface: #FFFFFF;
+  --surface-2: #E9EFF2;
+  --ink: #0F2230;
+  --muted: #4D6475;
+  --line: #D3DDE3;
+  --sky: #07738F;
+  --on-sky: #FFFFFF;
+  --gold: #A56E00;
+  --rust: #A94A27;
+  --wash: #E1F0F5;
+  --ridge-far: #BCD3DD;
+  --ridge-mid: #8FB5C6;
+  --ridge-near: #0F5A72;
+  --font-display: "Noto Serif Display", Georgia, "Times New Roman", serif;
+  --font-body: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Noto Sans Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1822; --surface: #10232F; --surface-2: #162E3D; --ink: #E8F0F4; --muted: #94ABBA;
+    --line: #1F3645; --sky: #4CC3E4; --on-sky: #06202B; --gold: #E6B34A; --rust: #E58A63;
+    --wash: #0F2A37; --ridge-far: #1D3D4F; --ridge-mid: #153242; --ridge-near: #0C2330;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1822; --surface: #10232F; --surface-2: #162E3D; --ink: #E8F0F4; --muted: #94ABBA;
+  --line: #1F3645; --sky: #4CC3E4; --on-sky: #06202B; --gold: #E6B34A; --rust: #E58A63;
+  --wash: #0F2A37; --ridge-far: #1D3D4F; --ridge-mid: #153242; --ridge-near: #0C2330;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55;
+  padding-block: 0 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; font-weight: 800; }
+p { margin: 0; }
+a { color: var(--sky); }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 20px; text-decoration: none; color: var(--ink); }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.nav { display: flex; gap: 20px; font-size: 15px; font-weight: 500; flex-wrap: wrap; }
+.nav a { color: var(--muted); text-decoration: none; }
+.nav a:hover { color: var(--ink); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 32px; padding-block: 16px 56px; align-items: start; }
+.hero-copy { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.hero h1 { font-size: clamp(28px, 4.2vw, 44px); line-height: 1.15; }
+.hero h1 span { color: var(--sky); }
+.lead { color: var(--muted); font-size: 18px; max-width: 54ch; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.cta { background: var(--sky); color: var(--on-sky); border: 1px solid var(--sky); border-radius: 8px; padding: 12px 20px; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; }
+.cta.alt { background: transparent; color: var(--sky); }
+.cta svg { width: 18px; height: 18px; flex: none; }
+.panorama { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--wash); }
+.panorama svg { display: block; width: 100%; height: auto; }
+.panorama-cap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface); }
+
+/* chat */
+.chat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; height: 680px; max-height: 85vh; min-width: 0; box-shadow: 0 18px 40px -24px rgba(8, 40, 56, 0.45); position: relative; }
+.chat.drag::after { content: "Суретті осында тастаңыз"; position: absolute; inset: 0; border: 2px dashed var(--sky); border-radius: 10px; background: color-mix(in srgb, var(--surface) 88%, transparent); display: grid; place-items: center; font-weight: 600; color: var(--sky); font-size: 18px; z-index: 5; }
+.chat-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--sky); color: var(--on-sky); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 17px; flex: none; }
+.chat-head b { display: block; font-size: 15px; }
+.chat-head small { color: var(--muted); font-size: 13px; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); margin-right: 6px; }
+.log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+.msg { max-width: 90%; padding: 10px 14px; border-radius: 12px; font-size: 15px; overflow-wrap: anywhere; }
+.msg p + p, .msg ul + p, .msg p + ul { margin-top: 8px; }
+.msg ul { margin: 0; padding-left: 20px; }
+.msg img { display: block; max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 8px; }
+.msg.bot { background: var(--surface-2); align-self: flex-start; border-bottom-left-radius: 3px; }
+.msg.me { background: var(--sky); color: var(--on-sky); align-self: flex-end; border-bottom-right-radius: 3px; }
+.msg.err { background: transparent; border: 1px dashed var(--rust); color: var(--rust); align-self: flex-start; }
+.wait { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
+.typing { display: inline-flex; gap: 4px; align-items: center; height: 20px; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: 0.2s; }
+.typing i:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 16px 12px; }
+.chip { border: 1px solid var(--line); background: transparent; color: var(--ink); padding: 6px 12px; border-radius: 999px; font-size: 13px; }
+.chip:hover { border-color: var(--sky); color: var(--sky); }
+.composer { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+.attach { display: flex; align-items: center; gap: 12px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.attach img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; flex: none; }
+.attach span { flex: 1; min-width: 0; font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attach button { background: transparent; border: 0; color: var(--rust); font-size: 13px; font-weight: 600; padding: 6px; }
+.row { display: flex; gap: 8px; }
+.row input[type="text"] { flex: 1; min-width: 0; font: inherit; font-size: 15px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.row input::placeholder { color: var(--muted); }
+.photo-btn { background: transparent; color: var(--sky); border: 1px solid var(--sky); border-radius: 8px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; }
+.photo-btn svg { width: 18px; height: 18px; }
+.send { background: var(--sky); color: var(--on-sky); border: 0; border-radius: 8px; padding: 0 18px; font-weight: 600; }
+.send:disabled, .photo-btn:disabled { opacity: 0.5; cursor: progress; }
+.hint { font-size: 12px; color: var(--muted); }
+
+/* sections */
+section { padding-block: 40px; }
+.sec-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+.sec-head h2 { font-size: clamp(24px, 3vw, 32px); }
+.sec-head p { color: var(--muted); max-width: 46ch; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.filter { border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 8px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; }
+.filter[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.card h3 { font-size: 18px; line-height: 1.25; }
+.tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.fact { font-family: var(--font-mono); font-size: 13px; color: var(--gold); text-align: right; font-weight: 500; }
+.card p { color: var(--muted); font-size: 15px; flex: 1; }
+.ask { align-self: flex-start; background: transparent; color: var(--sky); border: 1px solid var(--sky); border-radius: 6px; padding: 7px 14px; font-size: 14px; font-weight: 600; }
+.ask:hover { background: var(--sky); color: var(--on-sky); }
+
+.seasons { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.season { padding: 22px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--line); min-width: 0; }
+.season:last-child { border-right: 0; }
+.season h3 { font-size: 19px; }
+.season p { color: var(--muted); font-size: 15px; flex: 1; }
+@media (max-width: 900px) { .season { border-right: 0; border-bottom: 1px solid var(--line); } .season:last-child { border-bottom: 0; } }
+
+.note { border-left: 3px solid var(--gold); padding: 4px 0 4px 16px; color: var(--muted); font-size: 14px; max-width: 70ch; }
+footer { padding-block: 28px 0; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .chat { height: 640px; }
+}
+@media (prefers-reduced-motion: reduce) { .log { scroll-behavior: auto; } .typing i { animation: none; opacity: 0.6; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#top" aria-label="Дала Гид">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="6" fill="var(--gold)"/><g id="mark-rays" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"></g></svg>
+      Дала Гид
+    </a>
+    <nav class="nav" aria-label="Бөлімдер">
+      <a href="#chat">Гид-чат</a>
+      <a href="#places">Бағыттар</a>
+      <a href="#seasons">Қашан бару керек</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Қазақстан бойынша жол серігі</p>
+        <h1>Көрікті жердің суретін жүктеңіз. <span>Гид оның қай жер екенін айтады.</span></h1>
+        <p class="lead">Саяхатта түсірген суретті жіберіңіз немесе жердің атын жазыңыз. Гид орынның тарихын, қалай жетуге болатынын және қай мезгілде барған дұрыс екенін айтып береді.</p>
+        <div class="actions">
+          <button class="cta" id="heroPhoto" type="button" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            Суретті жүктеу
+          </button>
+          <button class="cta alt" id="heroAsk" type="button">Сұрақ жазу</button>
+        </div>
+        <div class="panorama">
+          <svg viewBox="0 0 800 360" role="img" aria-label="Тянь-Шань таулары мен Хан Тәңірі шыңының силуэті">
+            <rect width="800" height="360" fill="var(--wash)"/>
+            <g id="sun-rays" stroke="var(--gold)" stroke-width="3" stroke-linecap="round" opacity="0.9"></g>
+            <circle cx="150" cy="105" r="30" fill="var(--gold)"/>
+            <path d="M0 250 L70 215 L130 235 L210 190 L280 225 L350 170 L420 205 L470 95 L505 150 L540 130 L600 185 L670 160 L740 205 L800 190 L800 360 L0 360Z" fill="var(--ridge-far)"/>
+            <path d="M0 290 L90 250 L170 275 L260 235 L340 270 L430 240 L520 280 L610 245 L700 275 L800 250 L800 360 L0 360Z" fill="var(--ridge-mid)"/>
+            <path d="M0 332 L120 302 L240 324 L360 300 L480 327 L600 304 L720 324 L800 310 L800 360 L0 360Z" fill="var(--ridge-near)"/>
+            <circle cx="470" cy="95" r="4" fill="var(--ink)"/>
+            <text x="470" y="64" text-anchor="middle" font-family="Noto Sans Mono, monospace" font-size="14" font-weight="500" fill="var(--ink)">Хан Тәңірі · 7010 м</text>
+            <text x="470" y="80" text-anchor="middle" font-family="Noto Sans Mono, monospace" font-size="10" fill="var(--muted)">42°13′ с. е. · 80°10′ ш. б.</text>
+          </svg>
+          <div class="panorama-cap mono"><span>Тянь-Шань, еліміздің оңтүстік-шығысы</span><span>2,7 млн км² аумақ</span></div>
+        </div>
+      </div>
+
+      <div class="chat" id="chat" role="region" aria-label="Гидпен чат">
+        <div class="chat-head">
+          <div class="avatar" aria-hidden="true">Д</div>
+          <div><b>Дала, ЖИ-гид</b><small><span class="dot"></span>Қазақстандағы көрікті жерлер туралы</small></div>
+        </div>
+        <div class="log" id="log" aria-live="polite"></div>
+        <div class="chips" id="chips"></div>
+        <form class="composer" id="form" autocomplete="off">
+          <div class="attach" id="attach" hidden>
+            <img id="attachImg" alt="Таңдалған сурет">
+            <span id="attachName"></span>
+            <button type="button" id="attachDel">Алып тастау</button>
+          </div>
+          <div class="row">
+            <input id="file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+            <button class="photo-btn" id="photoBtn" type="button" hidden aria-label="Сурет қосу">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+              Сурет
+            </button>
+            <input id="q" type="text" placeholder="Мысалы: Астанадан 4 күнге, табиғатты жақсы көремін" aria-label="Гидке сұрағыңыз" maxlength="600">
+            <button class="send" id="send" type="submit">Жіберу</button>
+          </div>
+          <div class="hint" id="hint" hidden>Суретті осында сүйреп әкелуге де болады. Кесене, көл, шатқал немесе қала көрінісі жақсы танылады.</div>
+        </form>
+      </div>
+    </div>
+
+    <section id="places">
+      <div class="sec-head">
+        <h2>Қайда барған жөн</h2>
+        <p>Алғашқы сапарға арналған тоғыз бағыт. «Гидтен сұрау» түймесін басыңыз, гид қалай жетуге болатынын және не алу керегін айтады.</p>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Бағыт түрі"></div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section id="seasons">
+      <div class="sec-head">
+        <h2>Қашан бару керек</h2>
+        <p>Ел үлкен, сондықтан бір мезгілде бір жерде ыстық, екінші жерде қар жатады. Қайда баратыныңызды жыл мезгілі шешеді.</p>
+      </div>
+      <div class="seasons" id="seasonList"></div>
+    </section>
+
+    <p class="note">Гид жасанды интеллектке негізделген және қателесуі мүмкін. Суреттегі жерді тану дәлдігі фотоның сапасына байланысты. Бағалар, көлік кестесі, виза ережелері және саябақтардың жұмыс уақыты өзгеріп тұрады, сондықтан сапардан бұрын ресми сайттардан тексеріңіз.</p>
+  </main>
+
+  <footer>
+    <span>Дала Гид. Қазақстанның көрікті жерлеріне арналған жол серігі.</span>
+    <span class="mono">Қазақстан</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var DEST = [
+    { id: 'bao', cat: 'mountains', name: 'Үлкен Алматы көлі', region: 'Іле Алатауы', fact: '≈ 2500 м', keys: ['үлкен алматы', 'большое алматинское', 'бао'], text: 'Алматыдан бір сағаттай жердегі таудың көгілдір көлі. Судың түсі жыл мезгіліне қарай өзгереді.' },
+    { id: 'kolsai', cat: 'mountains', name: 'Көлсай және Қайыңды', region: 'Алматы облысы', fact: '1800–2700 м', keys: ['көлсай', 'қайыңды', 'кольсай', 'кайынды'], text: 'Көлсайдың үш көлі әртүрлі биіктікте орналасқан, ал Қайыңды көлінің суынан шыршалардың діңдері шығып тұрады. Екі-үш күнге барған дұрыс.' },
+    { id: 'burabay', cat: 'mountains', name: 'Бурабай', region: 'Ақмола облысы', fact: 'қарағай мен гранит', keys: ['бурабай', 'бурабай'], text: 'Еліміздің солтүстігіндегі қарағайлы орман, көлдер мен гранит жартастар. Астанадан демалыс күндері баруға ыңғайлы, жазда да, қыста да.' },
+    { id: 'katon', cat: 'mountains', name: 'Қатон-Қарағай', region: 'Шығыс Қазақстан', fact: 'Мұзтау 4506 м', keys: ['қатон', 'катон', 'мұзтау', 'белуха', 'алтай'], text: 'Алтайдың ең жасыл түкпірі: өзендер, самырсын ормандары, Рахман қайнарлары және Мұзтау (Белуха) бөктері.' },
+    { id: 'charyn', cat: 'canyons', name: 'Шарын шатқалы', region: 'Алматы облысы', fact: 'Алматыдан ≈ 200 км', keys: ['шарын', 'чарын'], text: 'Қызыл жартастар мен Қамалдар аңғары. Шатқалдың түбімен күн қызбай тұрғанда, таңертең жүрген дұрыс. Жазда су көбірек алыңыз.' },
+    { id: 'altyn', cat: 'canyons', name: 'Алтынемел', region: 'Алматы облысы', fact: 'Әнші құм', keys: ['алтынемел', 'алтын-эмель', 'әнші құм', 'поющий'], text: 'Ұлттық саябақта құрғақ ауа райында ызыңдайтын құм төбесі, түрлі-түсті Ақтау және Қатутау таулары, жабайы жануарлар бар.' },
+    { id: 'mangystau', cat: 'canyons', name: 'Маңғыстау', region: 'Каспий жағалауы', fact: 'Бозжыра, Үстірт', keys: ['маңғыстау', 'мангистау', 'бозжыра', 'үстірт'], text: 'Ақ жартастар, бор шатқалдары және шөлдегі жерасты мешіттері. Көктемде немесе күзде, ыстық түспей тұрғанда барған дұрыс.' },
+    { id: 'astana', cat: 'cities', name: 'Астана', region: 'Елорда', fact: 'Бәйтерек 97 м', keys: ['астана', 'бәйтерек', 'байтерек'], text: 'Заманауи сәулеті, Есіл жағалауы, мұражайлары мен дәмді тағамдары бар қала. Екі күн жеткілікті.' },
+    { id: 'turkestan', cat: 'cities', name: 'Түркістан', region: 'Оңтүстік Қазақстан', fact: 'ЮНЕСКО', keys: ['түркістан', 'туркестан', 'ясауи', 'ясави'], text: 'XIV ғасырдағы Қожа Ахмет Ясауи кесенесі — Орталық Азияның басты ескерткіштерінің бірі. Айналасында зиярат дәстүрі сақталған.' }
+  ];
+  var CATS = [['all', 'Барлығы'], ['mountains', 'Тау мен көл'], ['canyons', 'Шатқал мен шөл'], ['cities', 'Қала мен тарих']];
+  var CAT_NAME = { mountains: 'Тау мен көл', canyons: 'Шатқал мен шөл', cities: 'Қала мен тарих' };
+  var SEASONS = [
+    { name: 'Көктем', when: 'сәуір, мамыр', text: 'Дала гүлдейді, тау бөктері жылы, ал Маңғыстау мен Шарын әлі қызбаған. Биік соқпақтар жиі қармен жабық болады.', q: 'Көктемде Қазақстанда қайда барған жөн?' },
+    { name: 'Жаз', when: 'маусым, тамыз', text: 'Тау көлдері мен жаяу жорықтар маусымы: Көлсай, Алтай, Үлкен Алматы көлі. Шөлде ыстық, сондықтан оны басқа мезгілге қалдырған дұрыс.', q: 'Жазда Қазақстанда нені көруге болады?' },
+    { name: 'Күз', when: 'қыркүйек, қазан', text: 'Алматы маңындағы алтын түсті беткейлер, тыныш жолдар және Шарын, Алтынемел, Маңғыстауға қолайлы ауа райы.', q: 'Күзде Қазақстанда қайда барған дұрыс?' },
+    { name: 'Қыс', when: 'желтоқсан, ақпан', text: 'Алматы үстіндегі шаңғы трассалары, қарлы Бурабай және тыныш Астана. Алыстағы көлдерге апаратын жолдар жабық болуы мүмкін.', q: 'Қыста Қазақстанда не істеуге болады?' }
+  ];
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* sun rays */
+  function rays(id, cx, cy, r1, r2, n) {
+    var g = document.getElementById(id), s = '';
+    for (var i = 0; i < n; i++) {
+      var a = (Math.PI * 2 * i) / n;
+      s += '<line x1="' + (cx + Math.cos(a) * r1).toFixed(1) + '" y1="' + (cy + Math.sin(a) * r1).toFixed(1) + '" x2="' + (cx + Math.cos(a) * r2).toFixed(1) + '" y2="' + (cy + Math.sin(a) * r2).toFixed(1) + '"/>';
+    }
+    g.innerHTML = s;
+  }
+  rays('sun-rays', 150, 105, 38, 52, 16);
+  rays('mark-rays', 16, 16, 9, 13, 12);
+
+  /* cards */
+  var grid = document.getElementById('grid'), filters = document.getElementById('filters'), current = 'all';
+  function renderCards() {
+    grid.innerHTML = DEST.filter(function (d) { return current === 'all' || d.cat === current; }).map(function (d) {
+      return '<article class="card"><div class="card-top"><div><div class="tag">' + esc(CAT_NAME[d.cat]) + '</div><h3>' + esc(d.name) + '</h3></div><div class="fact">' + esc(d.fact) + '</div></div>' +
+        '<p>' + esc(d.text) + '</p><div class="tag">' + esc(d.region) + '</div>' +
+        '<button class="ask" type="button" data-id="' + d.id + '">Гидтен сұрау</button></article>';
+    }).join('');
+  }
+  filters.innerHTML = CATS.map(function (c) { return '<button class="filter" type="button" data-cat="' + c[0] + '" aria-pressed="' + (c[0] === 'all') + '">' + c[1] + '</button>'; }).join('');
+  filters.addEventListener('click', function (e) {
+    var b = e.target.closest('.filter'); if (!b) return;
+    current = b.getAttribute('data-cat');
+    Array.prototype.forEach.call(filters.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    renderCards();
+  });
+  grid.addEventListener('click', function (e) {
+    var b = e.target.closest('.ask'); if (!b) return;
+    var d = DEST.filter(function (x) { return x.id === b.getAttribute('data-id'); })[0];
+    ask('«' + d.name + '» туралы айтып бер: қалай жетуге болады, қашан барған дұрыс және не көруге болады.');
+  });
+  renderCards();
+
+  var seasonList = document.getElementById('seasonList');
+  seasonList.innerHTML = SEASONS.map(function (s, i) {
+    return '<div class="season"><div class="tag">' + esc(s.when) + '</div><h3>' + esc(s.name) + '</h3><p>' + esc(s.text) + '</p><button class="ask" type="button" data-s="' + i + '">Гидтен сұрау</button></div>';
+  }).join('');
+  seasonList.addEventListener('click', function (e) {
+    var b = e.target.closest('.ask'); if (!b) return;
+    ask(SEASONS[+b.getAttribute('data-s')].q);
+  });
+
+  /* chat */
+  var chatEl = document.getElementById('chat'), log = document.getElementById('log'), form = document.getElementById('form'),
+      input = document.getElementById('q'), sendBtn = document.getElementById('send'), chipsEl = document.getElementById('chips'),
+      fileInput = document.getElementById('file'), photoBtn = document.getElementById('photoBtn'), heroPhoto = document.getElementById('heroPhoto'),
+      attachBox = document.getElementById('attach'), attachImg = document.getElementById('attachImg'), attachName = document.getElementById('attachName'),
+      attachDel = document.getElementById('attachDel'), hint = document.getElementById('hint');
+
+  var history = [], busy = false, pendingFile = null, pendingUrl = null;
+  var imageLimits = { maxInputBytes: 25 * 1024 * 1024 };
+  photoBtn.hidden = false; heroPhoto.hidden = false; hint.hidden = false;
+
+  function md(t) {
+    var lines = String(t).split('\n'), out = '', list = false;
+    function inl(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }
+    lines.forEach(function (ln) {
+      var m = ln.match(/^\s*[-•*]\s+(.*)$/) || ln.match(/^\s*\d+[.)]\s+(.*)$/);
+      if (m) { if (!list) { out += '<ul>'; list = true; } out += '<li>' + inl(m[1]) + '</li>'; }
+      else { if (list) { out += '</ul>'; list = false; } if (ln.trim()) out += '<p>' + inl(ln.replace(/^#+\s*/, '')) + '</p>'; }
+    });
+    if (list) out += '</ul>';
+    return out;
+  }
+  function bubble(kind, html) {
+    var el = document.createElement('div');
+    el.className = 'msg ' + kind;
+    el.innerHTML = html;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  }
+  function waiting(label) { return '<span class="wait"><span class="typing"><i></i><i></i><i></i></span>' + esc(label) + '</span>'; }
+
+  bubble('bot', md('Сәлеметсіз бе! Мен Даламын, Қазақстан бойынша гидпін. Көрікті жердің суретін жүктеңіз, мен оның қай жер екенін айтып, тарихы мен жолы туралы қосымша ақпарат беремін. Сұрақты мәтінмен жазуға да болады.'));
+
+  var CHIPS = ['Алматыдан 5 күндік маршрут', 'Шарын шатқалына қалай жетуге болады', 'Тауға не алу керек', 'Астанадан демалыс күндері қайда барған жөн'];
+  chipsEl.innerHTML = CHIPS.map(function (c) { return '<button class="chip" type="button">' + esc(c) + '</button>'; }).join('');
+  chipsEl.addEventListener('click', function (e) { var b = e.target.closest('.chip'); if (b) ask(b.textContent); });
+
+  /* photo attach */
+  function errBubble(text) { var b = bubble('err', ''); b.textContent = text; }
+  function setFile(f) {
+    if (!f) return;
+    if (!/^image\//.test(f.type)) { errBubble('Тек сурет файлын таңдаңыз: JPEG, PNG немесе WebP.'); return; }
+    if (imageLimits && f.size > imageLimits.maxInputBytes) { errBubble('Сурет тым үлкен. Кішірек файл таңдаңыз.'); return; }
+    clearFile();
+    pendingFile = f; pendingUrl = URL.createObjectURL(f);
+    attachImg.src = pendingUrl; attachName.textContent = f.name || 'Сурет'; attachBox.hidden = false;
+    input.focus({ preventScroll: true });
+  }
+  function clearFile() {
+    if (pendingUrl) { try { URL.revokeObjectURL(pendingUrl); } catch (e) {} }
+    pendingFile = null; pendingUrl = null; attachBox.hidden = true; attachImg.removeAttribute('src'); fileInput.value = '';
+  }
+  photoBtn.addEventListener('click', function () { fileInput.click(); });
+  heroPhoto.addEventListener('click', function () { chatEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); fileInput.click(); });
+  document.getElementById('heroAsk').addEventListener('click', function () { chatEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); input.focus({ preventScroll: true }); });
+  fileInput.addEventListener('change', function () { setFile(fileInput.files && fileInput.files[0]); });
+  attachDel.addEventListener('click', clearFile);
+  ['dragenter', 'dragover'].forEach(function (n) { chatEl.addEventListener(n, function (e) { if (imageLimits && e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types || [], 'Files') !== -1) { e.preventDefault(); chatEl.classList.add('drag'); } }); });
+  ['dragleave', 'drop'].forEach(function (n) { chatEl.addEventListener(n, function (e) { if (n === 'dragleave' && chatEl.contains(e.relatedTarget)) return; chatEl.classList.remove('drag'); }); });
+  chatEl.addEventListener('drop', function (e) {
+    if (!imageLimits) return;
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) { e.preventDefault(); setFile(f); }
+  });
+
+  /* подготовка фото: уменьшаем до 1280 px и переводим в JPEG, чтобы запрос был лёгким */
+  function viaImg(file) {
+    return new Promise(function (ok, bad) {
+      var u = URL.createObjectURL(file), im = new Image();
+      im.onload = function () { URL.revokeObjectURL(u); ok(im); };
+      im.onerror = function () { URL.revokeObjectURL(u); bad(new Error('decode')); };
+      im.src = u;
+    });
+  }
+  function loadBitmap(file) {
+    if (window.createImageBitmap) {
+      return createImageBitmap(file, { imageOrientation: 'from-image' }).catch(function () { return viaImg(file); });
+    }
+    return viaImg(file);
+  }
+  function prepareImage(file) {
+    return loadBitmap(file).then(function (bmp) {
+      var w = bmp.width || bmp.naturalWidth, h = bmp.height || bmp.naturalHeight;
+      var k = Math.min(1, 1280 / Math.max(w, h));
+      var c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      return new Promise(function (ok, bad) {
+        c.toBlob(function (blob) {
+          if (!blob) return bad(new Error('encode'));
+          var r = new FileReader();
+          r.onload = function () { ok({ media_type: 'image/jpeg', data: String(r.result).split(',')[1] }); };
+          r.onerror = function () { bad(new Error('read')); };
+          r.readAsDataURL(blob);
+        }, 'image/jpeg', 0.82);
+      });
+    }).catch(function () { var e = new Error('image'); e.code = 'image_rejected'; throw e; });
+  }
+
+  function ask(text) {
+    if (busy) return;
+    text = (text || '').trim();
+    var file = pendingFile;
+    if (!text && !file) return;
+    if (!text && file) text = 'Бұл қандай жер? Қайда орналасқанын, тарихын және қызық деректерін айтып бер.';
+    chatEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    busy = true; sendBtn.disabled = true; photoBtn.disabled = true; chipsEl.hidden = true;
+    var shownUrl = pendingUrl;
+    bubble('me', (file && shownUrl ? '<img src="' + shownUrl + '" alt="Жүктелген сурет">' : '') + '<p>' + esc(text) + '</p>');
+    history.push({ role: 'user', content: (file ? '[Пайдаланушы сурет жіберді] ' : '') + text });
+    pendingFile = null; pendingUrl = null; attachBox.hidden = true; attachImg.removeAttribute('src'); fileInput.value = '';
+    var pending = bubble('bot', waiting(file ? 'Суретті қарап жатырмын…' : 'Гид жазып жатыр'));
+
+    (file ? prepareImage(file) : Promise.resolve(null)).then(function (image) {
+      return fetch('/.netlify/functions/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history.slice(-12), image: image })
+      });
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        if (!res.ok || !data.text) { var e = new Error('api'); e.code = data.error || 'http'; throw e; }
+        pending.innerHTML = md(data.text);
+        history.push({ role: 'assistant', content: data.text });
+        log.scrollTop = log.scrollHeight;
+      });
+    }).catch(function (err) {
+      history.pop();
+      pending.className = 'msg err';
+      var code = err && err.code;
+      pending.textContent = code === 'no_key' ? 'Сервер әлі бапталмаған: сайт иесі Claude API кілтін қосуы керек.'
+        : code === 'rate_limited' ? 'Сұраныс тым көп. Бірнеше минут күтіп, қайта жазыңыз.'
+        : code === 'image_rejected' || code === 'bad_image' ? 'Бұл суретті жіберу мүмкін болмады. JPEG, PNG немесе WebP форматындағы басқа сурет таңдаңыз.'
+        : 'Жауап алу мүмкін болмады. Байланысты тексеріп, сұрағыңызды қайта жіберіңіз.';
+    }).then(function () {
+      busy = false; sendBtn.disabled = false; photoBtn.disabled = false; input.focus({ preventScroll: true });
+    });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = input.value;
+    input.value = '';
+    ask(v);
+  });
+})();
+</script>
+</body>
+</html>
